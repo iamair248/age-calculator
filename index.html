@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Age Calculator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --primary:#6366f1;
+    --primary-dark:#4338ca;
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --accent:#22d3ee;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .container{
+    width:100%;
+    max-width:900px;
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+  h1{
+    text-align:center;
+    font-size:1.8rem;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  h1 i{color:var(--accent);}
+  p.subtitle{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:25px;
+    font-size:0.95rem;
+  }
+  .input-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+    margin-bottom:25px;
+  }
+  .input-group label{
+    display:flex;
+    flex-direction:column;
+    font-size:0.85rem;
+    color:var(--muted);
+    gap:6px;
+  }
+  .input-group input{
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:10px;
+    padding:10px 14px;
+    color:var(--text);
+    font-size:1rem;
+    outline:none;
+    transition:0.2s;
+  }
+  .input-group input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(34,211,238,0.2);
+  }
+  .calc-btn{
+    display:block;
+    margin:0 auto 30px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    border:none;
+    padding:12px 30px;
+    border-radius:50px;
+    font-size:1rem;
+    cursor:pointer;
+    transition:0.3s;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .calc-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(99,102,241,0.4);
+  }
+  .results{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:15px;
+    margin-bottom:30px;
+  }
+  .result-card{
+    background:#0f172a;
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+    border:1px solid #334155;
+    transition:0.3s;
+  }
+  .result-card:hover{
+    border-color:var(--accent);
+    transform:translateY(-3px);
+  }
+  .result-card i{
+    font-size:1.6rem;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  .result-card h3{
+    font-size:1.6rem;
+    margin:5px 0;
+  }
+  .result-card span{
+    color:var(--muted);
+    font-size:0.85rem;
+  }
+  .calendar-section{
+    background:#0f172a;
+    border-radius:14px;
+    padding:20px;
+    border:1px solid #334155;
+  }
+  .calendar-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+  }
+  .calendar-header h2{
+    font-size:1.1rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .calendar-header h2 i{color:var(--accent);}
+  .calendar-nav{
+    display:flex;
+    gap:10px;
+  }
+  .calendar-nav button{
+    background:#1e293b;
+    border:1px solid #334155;
+    color:var(--text);
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+  }
+  .calendar-nav button:hover{
+    background:var(--primary);
+    border-color:var(--primary);
+  }
+  .calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+    text-align:center;
+  }
+  .calendar-grid .day-name{
+    font-size:0.75rem;
+    color:var(--muted);
+    padding-bottom:6px;
+    font-weight:600;
+  }
+  .calendar-grid .day-cell{
+    padding:10px 0;
+    border-radius:8px;
+    font-size:0.9rem;
+    background:#1e293b;
+  }
+  .calendar-grid .day-cell.empty{
+    background:transparent;
+  }
+  .calendar-grid .day-cell.today{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    font-weight:700;
+    box-shadow:0 0 10px rgba(99,102,241,0.5);
+  }
+  .calendar-grid .day-cell.birthday{
+    border:2px solid var(--accent);
+    color:var(--accent);
+    font-weight:700;
+  }
+  footer{
+    text-align:center;
+    margin-top:25px;
+    color:var(--muted);
+    font-size:0.8rem;
+  }
+  footer i{color:#f87171;}
+  @media(max-width:480px){
+    h1{font-size:1.4rem;}
+    .input-group{flex-direction:column;align-items:center;}
+    .calendar-grid .day-cell{font-size:0.75rem;padding:8px 0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1><i class="fa-solid fa-cake-candles"></i> Age Calculator</h1>
+  <p class="subtitle">Find your exact age and explore your birth month calendar</p>
+
+  <div class="input-group">
+    <label>Date of Birth
+      <input type="date" id="dob">
+    </label>
+    <label>&nbsp;
+      <button class="calc-btn" onclick="calculateAge()">
+        <i class="fa-solid fa-calculator"></i> Calculate
+      </button>
+    </label>
+  </div>
+
+  <div class="results" id="results" style="display:none;">
+    <div class="result-card">
+      <i class="fa-solid fa-hourglass-half"></i>
+      <h3 id="yearsVal">0</h3>
+      <span>Years</span>
+    </div>
+    <div class="result-card">
+      <i class="fa-solid fa-calendar-days"></i>
+      <h3 id="monthsVal">0</h3>
+      <span>Months</span>
+    </div>
+    <div class="result-card">
+      <i class="fa-solid fa-calendar-week"></i>
+      <h3 id="weeksVal">0</h3>
+      <span>Weeks</span>
+    </div>
+    <div class="result-card">
+      <i class="fa-solid fa-calendar"></i>
+      <h3 id="daysVal">0</h3>
+      <span>Days</span>
+    </div>
+    <div class="result-card">
+      <i class="fa-solid fa-clock"></i>
+      <h3 id="hoursVal">0</h3>
+      <span>Hours</span>
+    </div>
+  </div>
+
+  <div class="calendar-section">
+    <div class="calendar-header">
+      <h2><i class="fa-solid fa-table-cells"></i> <span id="calMonthLabel">Calendar</span></h2>
+      <div class="calendar-nav">
+        <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <footer>Made with <i class="fa-solid fa-heart"></i> using HTML, CSS & JS</footer>
+</div>
+
+<script>
+let currentDate = new Date();
+let birthDate = null;
+
+function calculateAge(){
+  const dobInput = document.getElementById('dob').value;
+  if(!dobInput){
+    alert('Please select your date of birth');
+    return;
+  }
+  birthDate = new Date(dobInput);
+  const today = new Date();
+
+  if(birthDate > today){
+    alert('Date of birth cannot be in the future');
+    return;
+  }
+
+  let years = today.getFullYear() - birthDate.getFullYear();
+  let months = today.getMonth() - birthDate.getMonth();
+  let days = today.getDate() - birthDate.getDate();
+
+  if(days < 0){
+    months--;
+    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    days += lastMonth.getDate();
+  }
+  if(months < 0){
+    years--;
+    months += 12;
+  }
+
+  const diffMs = today - birthDate;
+  const totalDays = Math.floor(diffMs / (1000*60*60*24));
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = years*12 + months;
+  const totalHours = Math.floor(diffMs / (1000*60*60));
+
+  document.getElementById('yearsVal').textContent = years;
+  document.getElementById('monthsVal').textContent = totalMonths;
+  document.getElementById('weeksVal').textContent = totalWeeks;
+  document.getElementById('daysVal').textContent = totalDays;
+  document.getElementById('hoursVal').textContent = totalHours.toLocaleString();
+
+  document.getElementById('results').style.display = 'grid';
+
+  currentDate = new Date(birthDate.getFullYear(), birthDate.getMonth(), 1);
+  renderCalendar();
+}
+
+function changeMonth(offset){
+  currentDate.setMonth(currentDate.getMonth() + offset);
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+
+  const monthNames = ["January","February","March","April","May","June",
+    "July","August","September","October","November","December"];
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  document.getElementById('calMonthLabel').textContent =
+    monthNames[currentDate.getMonth()] + " " + currentDate.getFullYear();
+
+  dayNames.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'day-name';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+  const totalDaysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
+
+  for(let i=0; i<firstDay; i++){
+    const empty = document.createElement('div');
+    empty.className = 'day-cell empty';
+    grid.appendChild(empty);
+  }
+
+  const today = new Date();
+
+  for(let d=1; d<=totalDaysInMonth; d++){
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    cell.textContent = d;
+
+    if(d === today.getDate() && currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()){
+      cell.classList.add('today');
+    }
+
+    if(birthDate && d === birthDate.getDate() && currentDate.getMonth() === birthDate.getMonth()){
+      cell.classList.add('birthday');
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+renderCalendar();
+</script>
+
+</body>
+</html>
